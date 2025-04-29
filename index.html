@@ -22,33 +22,38 @@
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 
 <script>
-    // Inicializa o mapa
     var map = L.map('map').setView([-20.4799, -55.5368], 15);
 
-    // Adiciona o mapa base (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap'
     }).addTo(map);
 
-    // CORRIGIDO: agora buscando da rota /dados
-    fetch('https://api-geo-ymve.onrender.com/dados')
-      .then(response => response.json())
-      .then(geojsonData => {
-        var geojsonLayer = L.geoJSON(geojsonData, {
-          onEachFeature: function (feature, layer) {
-            let content = "";
-            for (const key in feature.properties) {
-              content += `<strong>${key}:</strong> ${feature.properties[key]}<br>`;
-            }
-            layer.bindTooltip(content, {sticky: true});
-          }
-        }).addTo(map);
+    let layerGroup = L.layerGroup().addTo(map);
 
-        map.fitBounds(geojsonLayer.getBounds());
-      })
-      .catch(error => {
-        console.error('Erro ao carregar dados:', error);
-      });
+    function carregarDadosArea() {
+        layerGroup.clearLayers();
+
+        const bounds = map.getBounds();
+        const bbox = `${bounds.getWest()},${bounds.getSouth()},${bounds.getEast()},${bounds.getNorth()}`;
+
+        fetch(`https://api-geo-ymve.onrender.com/dados?bbox=${bbox}`)
+            .then(res => res.json())
+            .then(data => {
+                const layer = L.geoJSON(data.features, {
+                    onEachFeature: function (feature, layer) {
+                        let content = "";
+                        for (const key in feature.properties) {
+                            content += `<strong>${key}:</strong> ${feature.properties[key]}<br>`;
+                        }
+                        layer.bindTooltip(content, { sticky: true });
+                    }
+                });
+                layerGroup.addLayer(layer);
+            });
+    }
+
+    map.on('moveend', carregarDadosArea);
+    document.addEventListener("DOMContentLoaded", carregarDadosArea);
 </script>
 
 </body>
