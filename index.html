@@ -50,10 +50,10 @@
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap',
-    maxZoom: 19  // Aumentando o zoom máximo para 19
+    maxZoom: 30
   }).addTo(map);
 
-  map.setMaxZoom(19); // Limite de zoom máximo para o mapa
+  map.setMaxZoom(30); 
 
   var markers = L.markerClusterGroup({
     iconCreateFunction: function (cluster) {
