@@ -44,11 +44,16 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 
 <script>
-  var map = L.map('map').setView([-20.4799, -55.5368], 15);
+  var map = L.map('map', {
+    zoomControl: true
+  }).setView([-20.4799, -55.5368], 15);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap'
+    attribution: '© OpenStreetMap',
+    maxZoom: 19  // Aumentando o zoom máximo para 19
   }).addTo(map);
+
+  map.setMaxZoom(19); // Limite de zoom máximo para o mapa
 
   var markers = L.markerClusterGroup({
     iconCreateFunction: function (cluster) {
